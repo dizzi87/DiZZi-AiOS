@@ -29,17 +29,20 @@ PLAN_SCOPE = 'chatgpt.tokens.use.direct'
 
 
 def _open_browser(url):
-    if webbrowser.open(url):
-        return True
-    # WSL may lack a Linux x-scheme handler while its Windows browser can
-    # reach the loopback callback. This still opens the user's system browser.
-    for path in ('/mnt/c/Program Files/Google/Chrome/Application/chrome.exe',
-                 '/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'):
-        if Path(path).is_file():
-            subprocess.Popen([path, url], stdin=subprocess.DEVNULL,
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return True
-    return False
+    # In WSL, gio can report a successful launch even when it has no browser
+    # handler. Start the Windows browser directly so it reaches loopback.
+    if os.environ.get('WSL_DISTRO_NAME') or 'microsoft' in os.uname().release.lower():
+        for path in ('/mnt/c/Program Files/Google/Chrome/Application/chrome.exe',
+                     '/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'):
+            if Path(path).is_file():
+                try:
+                    subprocess.Popen([path, url], stdin=subprocess.DEVNULL,
+                                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    return True
+                except OSError:
+                    continue
+        return False
+    return webbrowser.open(url)
 
 
 def _post(url, values):
