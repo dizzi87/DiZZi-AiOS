@@ -84,10 +84,10 @@ class DizziClient:
     def __init__(self, *, files=DEFAULT_FILES, ssh_host=None):
         self.files = Path(files)
         self.ssh_host = ssh_host or os.environ.get('DIZZI_LITTLE_SSH_HOST')
-        if not self.ssh_host:
-            raise ClientError('configuration_missing', 'Little Dizzi SSH host is not configured')
 
     def _credentials(self):
+        if not self.ssh_host:
+            raise ClientError('configuration_missing', 'Little Dizzi SSH host is not configured')
         token_file = self.files / 'gateway.token'
         key = self.files / 'client_ed25519'
         known = Path.home() / '.ssh/known_hosts'
