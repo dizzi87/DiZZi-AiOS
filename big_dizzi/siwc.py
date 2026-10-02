@@ -159,7 +159,7 @@ class Credentials:
         record = self._validate(response, issued, nonce, previous)
         with self.lock:
             self._write(self.account_path, record)
-        return {'status': 'SIWC PLAN USAGE PROVEN', 'client_id': issued, 'subject': record['subject']}
+        return {'status': 'SIWC GRANT SAVED — LIVE INFERENCE PENDING', 'client_id': issued, 'subject': record['subject']}
 
     def access_token(self):
         with self.lock:
