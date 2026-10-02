@@ -1,0 +1,28 @@
+{
+  "core_root": "/path/to/approved-core",
+  "state_dir": "/home/owner/.local/share/big-dizzi",
+  "brain": {
+    "sources": [
+      {"id": "system", "label": "System", "color": "#38BDF8", "paths": ["00-System"]},
+      {"id": "dizzi-aios", "label": "Dizzi AIOS", "color": "#34D399", "paths": ["50-Projects/Dizzi-AIOS"]}
+    ]
+  },
+  "provider": {
+    "name": "codex",
+    "executable": "/usr/local/bin/codex",
+    "auth_mode": "siwc",
+    "siwc_credentials_dir": "/home/owner/.config/big-dizzi/siwc",
+    "siwc_codex_home": "/home/owner/.local/share/big-dizzi/codex-home",
+    "models": {
+      "plan_goal": "gpt-6-sol",
+      "reason": "gpt-6-sol",
+      "research": "gpt-6-sol",
+      "engineer": "gpt-6-sol",
+      "summarise": "gpt-6-sol",
+      "health": "gpt-6-sol"
+    }
+  },
+  "artifact_browser": {
+    "library_path": "/tmp/big-dizzi-browser/libraries/usr/lib/x86_64-linux-gnu"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "aios-3d-brain",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "3d-force-graph": "^1.80.0",
+    "dompurify": "3.4.16",
+    "marked": "^18.0.11",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "license": "MIT"
+}
