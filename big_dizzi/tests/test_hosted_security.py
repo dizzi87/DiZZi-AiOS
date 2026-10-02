@@ -14,7 +14,7 @@ from cryptography.hazmat.primitives import hashes
 
 from big_dizzi.jwt_verify import verify_rs256
 from big_dizzi.hosted_security import HostedSecurity
-from big_dizzi.siwc import Credentials, PLAN_SCOPE
+from big_dizzi.siwc import Credentials, PLAN_SCOPE, _open_browser
 from big_dizzi.server import make_handler, safe_connections
 
 
@@ -91,6 +91,13 @@ class HostedTests(unittest.TestCase):
                 response['scope'] = 'openid offline_access resource.invoke'
                 with self.assertRaisesRegex(ValueError,'siwc_plan_usage_not_granted'):
                     creds._validate(response,'oaiapp_test','nonce')
+
+    def test_wsl_system_browser_fallback_uses_argument_vector(self):
+        with patch('big_dizzi.siwc.webbrowser.open',return_value=False),\
+             patch('big_dizzi.siwc.Path.is_file',return_value=True),\
+             patch('big_dizzi.siwc.subprocess.Popen') as launch:
+            self.assertTrue(_open_browser('https://auth.openai.com/example?state=fixture'))
+            self.assertEqual(launch.call_args.args[0][1], 'https://auth.openai.com/example?state=fixture')
 
     def test_oidc_nonce_and_signature_required(self):
         jwt = self.token(nonce='expected')

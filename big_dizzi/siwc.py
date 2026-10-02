@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import subprocess
 from threading import Lock
 import time
 from urllib import parse, request
@@ -25,6 +26,20 @@ SCOPES = 'openid profile email offline_access resource.invoke chatgpt.tokens.use
 APP_ID = 'big_dizzi'
 AGENT = APP_ID  # Must match app-server initialize.clientInfo.name.
 PLAN_SCOPE = 'chatgpt.tokens.use.direct'
+
+
+def _open_browser(url):
+    if webbrowser.open(url):
+        return True
+    # WSL may lack a Linux x-scheme handler while its Windows browser can
+    # reach the loopback callback. This still opens the user's system browser.
+    for path in ('/mnt/c/Program Files/Google/Chrome/Application/chrome.exe',
+                 '/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'):
+        if Path(path).is_file():
+            subprocess.Popen([path, url], stdin=subprocess.DEVNULL,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return True
+    return False
 
 
 def _post(url, values):
@@ -129,7 +144,7 @@ class Credentials:
             url = AUTHORIZE + '?' + parse.urlencode(params)
             if not open_browser:
                 raise ValueError('interactive_browser_required')
-            if not webbrowser.open(url):
+            if not _open_browser(url):
                 raise ValueError('browser_open_failed')
             listener.handle_request()
         if not secrets.compare_digest(captured.get('state', ''), state) or captured.get('error') or not captured.get('code'):
