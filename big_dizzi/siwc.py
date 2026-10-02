@@ -157,7 +157,7 @@ class Credentials:
                 if not response or not response.get('access_token') or not response.get('refresh_token'):
                     raise ValueError('siwc_refresh_failed')
                 granted = set(response.get('scope', '').split())
-                if PLAN_SCOPE not in granted:
+                if PLAN_SCOPE not in granted or 'resource.invoke' not in granted:
                     raise ValueError('siwc_plan_usage_not_granted')
                 record.update(access_token=response['access_token'], refresh_token=response['refresh_token'],
                               expires_at=int(time.time()) + int(response['expires_in']), scopes=sorted(granted))

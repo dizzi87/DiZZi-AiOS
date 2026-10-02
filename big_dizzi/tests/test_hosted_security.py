@@ -72,7 +72,7 @@ class HostedTests(unittest.TestCase):
             creds._write(creds.account_path, record)
             self.assertEqual(creds.account_path.stat().st_mode & 0o077, 0)
             with patch('big_dizzi.siwc._post',return_value={'access_token':'new','refresh_token':'next', 'expires_in':3600,
-                                                             'scope':PLAN_SCOPE}):
+                                                             'scope':'resource.invoke '+PLAN_SCOPE}):
                 self.assertEqual(creds.access_token(), 'new')
             self.assertEqual(creds.account()['refresh_token'], 'next')
             creds._write(creds.account_path,{**record,'scopes':[]})
