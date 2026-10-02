@@ -15,7 +15,7 @@ from cryptography.hazmat.primitives import hashes
 from big_dizzi.jwt_verify import verify_rs256
 from big_dizzi.hosted_security import HostedSecurity
 from big_dizzi.siwc import Credentials, PLAN_SCOPE, _open_browser
-from big_dizzi.server import make_handler, safe_connections
+from big_dizzi.server import make_handler, safe_connections, load_config
 
 
 def b64(value):
@@ -114,6 +114,13 @@ class HostedTests(unittest.TestCase):
         self.assertNotIn('scope',public)
         item['health'] = 'token=secret-value'
         with self.assertRaises(ValueError):safe_connections({'connections':[item]})
+
+    def test_hosted_mode_cannot_select_api_key_provider(self):
+        with tempfile.TemporaryDirectory() as root:
+            config = {'core_root':root,'state_dir':root,'provider':{'name':'openai','models':dict.fromkeys(
+                ('plan_goal','reason','research','engineer','summarise'),'fixture')},'hosted':self.config}
+            path = Path(root)/'config.json';path.write_text(json.dumps(config))
+            with self.assertRaisesRegex(ValueError,'hosted_requires_siwc'):load_config(path)
 
     def test_http_auth_csrf_logout_and_approval_boundary(self):
         service = Mock()

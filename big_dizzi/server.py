@@ -45,6 +45,8 @@ def load_config(path):
     config = json.loads(Path(path).read_text(encoding='utf-8'))
     if config['provider']['name'] not in ('codex', 'openai'):
         raise ValueError('unsupported_provider')
+    if config.get('hosted') and (config['provider']['name'] != 'codex' or config['provider'].get('auth_mode') != 'siwc'):
+        raise ValueError('hosted_requires_siwc')
     models = config['provider']['models']
     if config['provider'].get('collaboration_mode') not in (None, 'plan'):
         raise ValueError('invalid_collaboration_mode')
